@@ -129,7 +129,7 @@ function dkan_sitewide_data_extent_block() {
     $wrapper = entity_metadata_wrapper('node', $node);
     $spatial = $wrapper->field_spatial->value();
     if ($spatial && $spatial['wkt']) {
-    drupal_add_library('leaflet_widget', 'Leaflet');
+    drupal_add_library('leaflet_widget', 'leaflet_core');
      $features = array(leaflet_widget_geojson_feature($spatial['wkt']));
        $geojson = drupal_json_encode(leaflet_widget_geojson_feature_collection($features));
        $output = "var dataExtent = " . $geojson;
@@ -159,7 +159,10 @@ function dkan_sitewide_data_extent_block() {
  */
 function dkan_sitewide_license_block() {
   $node = menu_get_object();
-  if ($node->type != 'dataset') {
+  if (!isset($node->type)) {
+    return '';
+  }
+  elseif ($node->type != 'dataset') {
     return '';
   }
   else {
@@ -339,7 +342,9 @@ function dkan_sitewide_dataset_search_form($form, $form_state) {
   );
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Apply'),
+    //'#value' => t('Apply'),
+    // Use fontawesome icon instead.
+      '#value' => decode_entities('&#xf002;'),
   );
   return $form;
 }

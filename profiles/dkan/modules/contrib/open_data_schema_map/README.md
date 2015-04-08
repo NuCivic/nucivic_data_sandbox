@@ -46,7 +46,7 @@ You will need to create the API record before adding arguments and mappings.
 
 The results of the API call can be filtered by a particular field via arguments in the URL. To add an argument, first choose the schema field then, if you are filtering by a custom field API field (ie, a field whose machine name begins with "field\_"), identify the database column that would contain the actual argument value. Leave off the field name prefix; for instance, if filtering by a DKAN tag (a term reference field), the correct column is field_tags_tid, so you would enter "tid". Which Drupal field to use will be extrapolated from the token you map to that schema field.
 
-![Screen Shot 2014-07-14 at 3.55.49 PM.png | uploaded via ZenHub](https://www.zenhub.io/files/53c43afae5dcd8b26d002496)
+![Screen Shot 2014-07-14 at 3.55.49 PM.png | uploaded via ZenHub](https://cloud.githubusercontent.com/assets/512243/5281816/992d1138-7ac6-11e4-8e7b-bcaefa733648.png)
 
 ### Field Mapping
 
@@ -101,7 +101,7 @@ You can chose which of the available multivalue fields on your selected bundle t
 
 When you return to the tags section of the form after saving, you will now see a special token navigator you can use to find tokens that will work with this iterative approach (using "Nth" in place of the standard delta value in the token):
 
-![Screen Shot 2014-07-16 at 12.22.00 AM.png | uploaded via ZenHub](https://www.zenhub.io/files/53c5fdebe5dcd8b26d003560)
+![screen shot 2014-07-16 at 12 22 00 am](https://cloud.githubusercontent.com/assets/512243/5281826/ad5e3eac-7ac6-11e4-8c7d-91076527c84d.png)
 
 ## Customizing
 
@@ -109,8 +109,45 @@ When you return to the tags section of the form after saving, you will now see a
 
 You are not limited by the schemas included with this module; any Open Data schema may be defined in a custom module. Use the open_data_schema_ckan module as a model to get started.
 
+### Using the xml output module
+
+We've isolated xml output into it's own module. A few reasons why:
+
++ It relies on a composer dependency
++ This module is distributed with dkan, a drupal installation profile, and we don't have a way of installing composer dependencies while building the distro with ```drush make```
++ We don't want to force all this trouble on users that just want ***json output*** 
+
+Because of all this, if you still want to use xml output for your odsm endpoints (we don't judge), you need to:
+
+
++ Install composer dependencies:
+
+```
+$ cd modules/open_data_schema_map_xml_output
+$ composer install
+```
+
++ Enable module
+
+```
+$ drush -y en open_data_schema_map_xml_output
+```
+
+If you need instructions to install composer globally in your system please refer to https://getcomposer.org/doc/00-intro.md#globally.
+
 ### Date format
 Date formats can be chanaged manually by changing the "Medium" date time format in "admin/config/regional/date-time" or in code by using one of the alter hooks:
 ![screen shot 2014-09-04 at 11 15 01 am](https://cloud.githubusercontent.com/assets/512243/4152408/a9cb06b2-344e-11e4-84c8-c2174b5fc566.png)
 
+## Contributing
+
+We are accepting issues in the dkan issue thread only -> https://github.com/NuCivic/dkan/issues -> Please label your issue as **"component: open_data_schema_map"** after submitting so we can identify problems and feature requests faster.
+
+If you can, please cross reference commits in this repo to the corresponding issue in the dkan issue thread. You can do that easily adding this text:
+
+```
+NuCivic/dkan#issue_id
+``` 
+
+to any commit message or comment replacing **issue_id** with the corresponding issue id.
 
