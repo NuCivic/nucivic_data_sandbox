@@ -1,19 +1,9 @@
 name = Visualization Entity
 core = 7.x
-package = NUDATA
-
+package = NuCivic
 dependencies[] = eck
-dependencies[] = eck
-dependencies[] = entityreference
 dependencies[] = features
-dependencies[] = geo_file_entity
-dependencies[] = geo_file_entity_geojson_bundle
-dependencies[] = libraries
-dependencies[] = og
-dependencies[] = options
-
 features[eck_entity_type][] = visualization
 features[features_api][] = api:2
-features[field_base][] = field_resource
-features_exclude[dependencies][entityreference] = entityreference
+mtime = 1421114365
 project path = sites/all/modules/nucivic

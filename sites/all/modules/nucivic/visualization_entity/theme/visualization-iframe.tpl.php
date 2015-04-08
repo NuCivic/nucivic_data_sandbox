@@ -7,7 +7,17 @@
 ?>
 
 <style type="text/css">
-    #iframe-shell .content {
+    #admin-menu{
+      display: none;
+    }
+    body.admin-menu {
+      margin-top: 0px !important;
+    }
+    .region-content .block {
+      box-shadow: none;
+      -webkit-box-shadow: none;
+    }
+    #iframe-shell .entity-visualization .content {
     	display: none;
     }
 </style>
