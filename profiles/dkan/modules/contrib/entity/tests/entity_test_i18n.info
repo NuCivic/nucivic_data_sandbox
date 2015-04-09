@@ -6,9 +6,8 @@ package = Multilingual - Internationalization
 core = 7.x
 hidden = TRUE
 
-; Information added by drush on 2014-12-22
-version = "7.x-1.5+2-dev"
-core = "7.x"
+; Information added by drush on 2015-04-09
+version = "unknown"
 project = "entity"
-datestamp = "1419279643"
+datestamp = "1428594272"
 

@@ -5,6 +5,9 @@
  * Pages and forms for ODSM.
  */
 
+$module_path = drupal_get_path('module', 'open_data_schema_map');
+require_once $module_path . '/open_data_schema_map.output.inc';
+
 /**
  * Callback for ODSM overiew page.
  */
@@ -20,6 +23,11 @@ function open_data_schema_map_page_overview() {
     $data['delete'] = isset($data['callback']) ? '' : l(t('delete'), 'admin/config/services/odsm/delete/' . $data['machine_name']);
     unset($data['machine_name']);
     unset($data['callback']);
+
+    foreach (module_implements('odsm_page_overview_alter') as $module) {
+      $function = $module . '_odsm_page_overview_alter';
+      $function($data);
+    }
     // TODO: report features status.
     // $data['configuration'] = theme('entity_status',
     // array('status' => $data['features']));
@@ -33,6 +41,7 @@ function open_data_schema_map_page_overview() {
   $header[] = t('Entity');
   $header[] = t('Bundle');
   $header[] = t('Endpoint');
+  $header[] = t('Output Format');
   $header[] = t('Edit');
   $header[] = t('Delete');
   // $header[] = t('Configuration');
@@ -70,8 +79,12 @@ function open_data_schema_map_delete_submit(array $form, array &$form_state) {
   $api = $form['#api'];
   $id = $api->id;
   db_delete('open_data_schema_map')
-  ->condition('id', $id)
+    ->condition('id', $id)
     ->execute();
+
+  // Rebuild menu so the API is not available anymore.
+  menu_rebuild();
+
   drupal_set_message(t('API %name has been deleted', array('%name' => $api->name)));
   drupal_goto('admin/config/services/odsm');
 }
@@ -104,17 +117,26 @@ function open_data_schema_map_manage(array $form, array &$form_state, $api = NUL
   if ($list) {
     $markup = t('Choose from the available APIs:') . theme('item_list', $list);
   }
+
   $entity_types = entity_get_info();
   foreach ($entity_types as $entity_name => $entity_info) {
     $entity_list[$entity_name] = $entity_info['label'];
   }
   $selected_entity = '';
   $selected_schema = '';
+  $selected_outputformat = '';
   if (isset($form_state['triggering_element']['#name']) && $name = $form_state['triggering_element']['#name']) {
     $selected_entity = $form_state['triggering_element']['#value'];
   }
   elseif ($api) {
     $selected_entity = $api->type;
+  }
+  $output_formats = open_data_schema_map_form_output_formats();
+  if (isset($form_state['triggering_element']['#outputformat']) && $outputformat = $form_state['triggering_element']['#outputformat']) {
+    $selected_outputformat = $form_state['triggering_element']['#value'];
+  }
+  else {
+    $selected_outputformat = $output_formats['json'];
   }
   $form['name'] = array(
     '#title' => 'Title',
@@ -183,6 +205,15 @@ function open_data_schema_map_manage(array $form, array &$form_state, $api = NUL
     '#required' => TRUE,
     '#weight' => 1,
   );
+  $form['outputformat'] = array(
+    '#title' => 'Output Format',
+    '#type' => 'select',
+    '#description' => t('Select from the available output formats.'),
+    '#options' => $output_formats,
+    '#required' => TRUE,
+    '#weight' => 2,
+  );
+
   $form['enabled'] = array(
     '#title' => 'Enabled',
     '#type' => 'checkbox',
@@ -195,7 +226,7 @@ function open_data_schema_map_manage(array $form, array &$form_state, $api = NUL
     '#description' => t('Select from the available schemas.'),
     '#options' => $list,
     '#required' => TRUE,
-    '#weight' => 2,
+    '#weight' => 5,
   );
   // Only add Schema if we've already saved the initial config.
   if ($api) {
@@ -268,6 +299,7 @@ function open_data_schema_map_manage(array $form, array &$form_state, $api = NUL
     $form['type']['#default_value'] = $api->type;
     $form['bundle']['#default_value'] = $api->bundle;
     $form['endpoint']['#default_value'] = $api->endpoint;
+    $form['outputformat']['#default_value'] = $api->outputformat;
     $form['enabled']['#default_value'] = $api->enabled;
     $form['api_schema']['#default_value'] = $api->api_schema;
     $form['arguments']['#default_value'] = $api->arguments;
@@ -293,6 +325,11 @@ function open_data_schema_map_manage(array $form, array &$form_state, $api = NUL
     );
   }
   $form['#tree'] = TRUE;
+
+  foreach (module_implements('odsm_form_alter') as $module) {
+    $function = $module . '_odsm_form_alter';
+    $function($form, $api);
+  }
   return $form;
 }
 
@@ -358,6 +395,8 @@ function open_data_schema_map_manage_submit($form, $form_state) {
   }
   drupal_static_reset('open_data_schema_map_api_load_all');
   if (drupal_write_record('open_data_schema_map', $record, $update)) {
+    // Rebuild menus in order to update/add the API.
+    menu_rebuild();
     drupal_set_message($message);
   }
   drupal_goto('admin/config/services/odsm/edit/' . $values['machine_name']);
@@ -382,38 +421,21 @@ function open_data_schema_map_add_type(&$values, $mapping) {
  * Creates endpoint.
  */
 function open_data_schema_map_endpoint($api) {
-  $queries = drupal_get_query_parameters();
-  try {
-    $args = open_data_schema_map_endpoint_args($api->mapping, $queries, $api->arguments);
-    if (isset($args['required'])) {
-      $error_data = array(
-        '__type' => 'Validation Error',
-        'name_or_id' => array('Missing Value'),
-      );
-      throw new OpenDataSchemaMapException(t('Required field "!field" is missing', array('!field' => $args['required'])), 400, $error_data);
-    }
-    // This endpoint is created in code.
-    if (isset($api->callback) && function_exists($api->callback)) {
-      $function = $api->callback;
-      $result = $function($queries, $api->arguments);
-    }
-    // This endpoint was created with the UI.
-    else {
-      if (isset($api->callback) && function_exists($api->callback)) {
-        $function = $api->callback;
-        return $function($api->args, $queries, $api->arguments);
-      }
-      $offset = open_data_schema_map_endpoint_special_arg($args, 'offset');
-      $limit = open_data_schema_map_endpoint_special_arg($args, 'limit');
-      $ids = open_data_schema_map_endpoint_query($api, $limit, $offset, $args);
-      $result = open_data_schema_map_endpoint_process_map($ids, $api);
-    }
-  }
-  catch (OpenDataSchemaMapException $e) {
-    drupal_add_http_header('Status', $e->getHTTPError());
-    $result['error'] = $e->getData();
-  }
-  drupal_alter('open_data_schema_map_results', $result, $api->machine_name, $api->api_schema);
+  $render = open_data_schema_map_render_api($api);
+  $headers = $render['headers'];
+  $result = $render['result'];
 
-  return drupal_json_output($result);
+  foreach ($headers as $key => $value) {
+    drupal_add_http_header($key, $value);
+  }
+
+  $output_formats = open_data_schema_map_retrieve_output_formats();
+  if (in_array($api->outputformat, array_keys($output_formats))) {
+    $function = $output_formats[$api->outputformat];
+    $response = $function($api, $result);
+    echo $response;
+  }
+  else {
+    drupal_set_message("Invalid output format", "error");
+  }
 }

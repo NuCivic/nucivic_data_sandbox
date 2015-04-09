@@ -1,3 +1,19 @@
+7.x-1.8  2015-04-02
+--------------------------
+ - Drupal core update to 7.36
+ - Some tweaks to display properly drupal admin pages using nuboot_radix
+ - Removed unnecessary drupal warning messages (colorizer, updates, etc)
+ - Tweaks to behat tests
+ - Security updates for contrib modules
+
+
+
+7.x-1.7  2015-02-20
+--------------------------
+- Adds Panels to DKAN for Drag and Drop layouts: http://docs.getdkan.com/dkan-documentation/dkan-users-guide/customize-dkan-pages-layouts-and-components-using-panels
+- Adds Open Data Schema to DKAN https://github.com/NuCivic/open_data_schema_map#open-data-schema-map
+- Adds 'saved states' to Recline data preview
+
 7.x-1.6
 ---------
  - core update to 7.34
