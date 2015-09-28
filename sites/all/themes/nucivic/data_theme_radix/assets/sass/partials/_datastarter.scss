@@ -9,6 +9,15 @@
   }
 
   .front {
+    .view-front-page-group-grid {
+      .media-image {
+        text-align:center;
+      }
+      h3.media-heading {
+        font-size:14px;
+        text-align:center;
+      }    
+    }
     .panel-top {
       .container {
         padding: 60px 0 0;
