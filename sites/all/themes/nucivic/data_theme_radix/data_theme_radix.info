@@ -36,7 +36,7 @@ settings[toggle_comment_user_verification] = 1
 settings[toggle_favicon] = 1
 settings[toggle_main_menu] = 1
 settings[toggle_secondary_menu] = 1
-settings[logo_path] = 'sites/all/themes/nucivic/data_theme_radix/logo.png'
+settings[logo_path] = 'sites/all/themes/nucivic/data_theme_radix/logo.svg'
 settings[hero_path] = 'sites/all/themes/nucivic/data_theme_radix/assets/images/hero.jpg'
 settings[copyright][value] = 'Powered by <a href="http://nucivic.com/dkan">DKAN</a>, a project of <a href="http://nucivic.com">NuCivic</a>'
 settings[copyright][format] = 'html'
