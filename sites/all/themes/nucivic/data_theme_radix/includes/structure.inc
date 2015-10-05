@@ -10,6 +10,6 @@
 function data_theme_radix_preprocess_page(&$variables) {
 	$theme = variable_get('theme_default');
 	if (theme_get_setting('default_logo')) {
-		$variables['logo'] = '/' . drupal_get_path('theme', $theme ) . '/logo.png';		
+		$variables['logo'] = '/' . drupal_get_path('theme', $theme ) . '/logo.svg';		
 	}
 }
