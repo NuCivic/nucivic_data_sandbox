@@ -9,7 +9,8 @@
  */
 function data_theme_radix_form_system_theme_settings_alter(&$form, &$form_state) {
   // Ensure this include file is loaded when the form is rebuilt from the cache.
-  $form_state['build_info']['files']['form'] = drupal_get_path('theme', 'default') . '/theme-settings.php';
+  $form_state['build_info']['files']['form'] = drupal_get_path('theme', 'data_theme_radix') . '/theme-settings.php';
+  unset($form['nuboot_radix_theme_settings']);
 
   // Add theme settings here.
   $form['data_theme_radix_theme_settings'] = array(
@@ -49,8 +50,8 @@ function data_theme_radix_form_system_theme_settings_alter(&$form, &$form_state)
   $form['hero']['hero_upload'] = array(
     '#type' => 'file',
     '#title' => 'Upload a new photo for the hero unit',
-    '#description' => t('<p>The hero unit is the large featured area located on the front page. 
-      This theme supplies a default background image for this area. You may upload a different 
+    '#description' => t('<p>The hero unit is the large featured area located on the front page.
+      This theme supplies a default background image for this area. You may upload a different
       photo here and it will replace the default background image.</p><p>Max. file size: 2 MB
       <br>Recommended pixel size: 1920 x 400<br>Allowed extensions: .png .jpg .jpeg</p>'),
     '#upload_validators' => array(
