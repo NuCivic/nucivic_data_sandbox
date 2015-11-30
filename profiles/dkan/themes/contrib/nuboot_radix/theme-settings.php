@@ -79,7 +79,6 @@ function nuboot_radix_form_system_theme_settings_alter(&$form, &$form_state) {
  * Helper function to validate background color field
  */
 function _background_option_setting($element, &$form, &$form_state) {
-    print 'hey';
   if(!empty($element['#value'])) {
     $hex = $element['#value'];
     // Must be a string.
