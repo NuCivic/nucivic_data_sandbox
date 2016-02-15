@@ -14,7 +14,7 @@
   <div class="branding container">
     <?php if ($logo): ?>
       <a class="logo navbar-btn pull-left" href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>">
-        <img width="234" height="120" src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
+        <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
       </a>
     <?php endif; ?>
     <?php if ($site_name): ?>
