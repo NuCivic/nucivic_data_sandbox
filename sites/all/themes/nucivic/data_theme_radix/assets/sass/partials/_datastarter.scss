@@ -34,7 +34,9 @@
     }
   }
 }
-
+.page-header {
+  border: none;
+}
 .shortcuts-menu {
   margin-top: 32px;
 
@@ -97,10 +99,6 @@
 
 .group_additional thead > tr > th {
   background-image: linear-gradient(#F5F5F5, #F0F0F0) !important;
-}
-
-.radix-layouts-content .pane-title{
-  font-size: 24px;
 }
 
 .view-group-block .views-field-title {
